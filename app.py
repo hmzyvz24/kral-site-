@@ -18,6 +18,7 @@ def ana_sayfa():
     <html>
     <head>
         <title>Kral Site</title>
+        <meta name="google-site-verification" content="5V83CDxeEdCKTcIDpNrnb05zFAYpj6BlIEgrxW2M6sQ" />
         <style>
             body {{ font-family: 'Arial Black', Arial; text-align: center; background-image: url('https://i.pinimg.com/736x/68/fc/52/68fc522a8deaea59e9a1543df5380608.jpg'); background-size: cover; background-attachment: fixed; color: white; margin: 0; padding: 50px; }}
             h1, p, a, span {{ font-style: italic; text-shadow: 2px 2px 8px black; }}
