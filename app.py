@@ -219,72 +219,67 @@ def xox():
             body { background-image: url('https://i.pinimg.com/736x/68/fc/52/68fc522a8deaea59e9a1543df5380608.jpg'); background-size: cover; color: white; text-align: center; padding-top: 50px; font-family: Arial; }
             h1 { font-style: italic; text-shadow: 2px 2px 8px black; }
             #board { display: grid; grid-template-columns: repeat(3, 120px); gap: 10px; width: 380px; margin: 30px auto; }
-            .cell { width: 120px; height: 120px; background: rgba(0,0,0,0.7); font-size: 60px; color: lime; cursor: pointer; border: 4px solid lime; }
+            .cell { width: 120px; height: 120px; background: rgba(0,0,0,0.7); font-size: 60px; color: lime; cursor: pointer; border: 4px solid lime; display: flex; align-items: center; justify-content: center; }
             .cell:hover { background: rgba(0,0,0,0.9); }
-            #status { font-size: 30px; margin: 20px; font-style: italic; text-shadow: 2px 2px 8px black; }
-            button { padding: 10px 20px; font-size: 20px; background: lime; color: black; border: none; cursor: pointer; }
+            #message { font-size: 50px; margin: 30px; font-weight: bold; }
+            button { padding: 15px 30px; font-size: 25px; background: lime; color: black; border: none; cursor: pointer; margin-top: 20px; }
         </style>
     </head>
     <body>
         <h1>XOX Oyunu</h1>
-        <p id="status">Sıra: X</p>
+        <p style="font-size: 30px;">Sıra: <span id="turn">X</span></p>
         <div id="board">
-            <div class="cell" onclick="makeMove(0)"></div>
-            <div class="cell" onclick="makeMove(1)"></div>
-            <div class="cell" onclick="makeMove(2)"></div>
-            <div class="cell" onclick="makeMove(3)"></div>
-            <div class="cell" onclick="makeMove(4)"></div>
-            <div class="cell" onclick="makeMove(5)"></div>
-            <div class="cell" onclick="makeMove(6)"></div>
-            <div class="cell" onclick="makeMove(7)"></div>
-            <div class="cell" onclick="makeMove(8)"></div>
+            <div class="cell" onclick="play(0)"></div>
+            <div class="cell" onclick="play(1)"></div>
+            <div class="cell" onclick="play(2)"></div>
+            <div class="cell" onclick="play(3)"></div>
+            <div class="cell" onclick="play(4)"></div>
+            <div class="cell" onclick="play(5)"></div>
+            <div class="cell" onclick="play(6)"></div>
+            <div class="cell" onclick="play(7)"></div>
+            <div class="cell" onclick="play(8)"></div>
         </div>
-        <button onclick="resetGame()">Yeni Oyun</button>
+        <div id="message"></div>
+        <button onclick="reset()">Yeni Oyun</button>
         <script>
-            let board = ['', '', '', '', '', '', '', '', ''];
+            let board = Array(9).fill(null);
             let currentPlayer = 'X';
-            let gameActive = true;
+            let gameOver = false;
 
-            const winningConditions = [
-                [0, 1, 2], [3, 4, 5], [6, 7, 8],
-                [0, 3, 6], [1, 4, 7], [2, 5, 8],
-                [0, 4, 8], [2, 4, 6]
+            const wins = [
+                [0,1,2], [3,4,5], [6,7,8],
+                [0,3,6], [1,4,7], [2,5,8],
+                [0,4,8], [2,4,6]
             ];
 
-            function makeMove(index) {
-                if (board[index] !== '' || !gameActive) return;
+            function play(index) {
+                if (board[index] || gameOver) return;
                 board[index] = currentPlayer;
                 document.getElementsByClassName('cell')[index].innerText = currentPlayer;
-                checkResult();
-                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-                document.getElementById('status').innerText = 'Sıra: ' + currentPlayer;
-            }
 
-            function checkResult() {
-                let won = false;
-                for (let condition of winningConditions) {
-                    let a = board[condition[0]];
-                    let b = board[condition[1]];
-                    let c = board[condition[2]];
-                    if (a === '' || b === '' || c === '') continue;
-                    if (a === b && b === c) {
-                        document.getElementById('status').innerText = currentPlayer + ' Kazandı! 👑';
-                        gameActive = false;
-                        won = true;
-                    }
-                }
-                if (!won && board.every(cell => cell !== '')) {
-                    document.getElementById('status').innerText = 'Berabere!';
-                    gameActive = false;
+                if (checkWin(currentPlayer)) {
+                    document.getElementById('message').innerHTML = '<span style="color:red;">' + currentPlayer + ' KAZANDI! 👑</span>';
+                    gameOver = true;
+                } else if (board.every(cell => cell)) {
+                    document.getElementById('message').innerHTML = '<span style="color:yellow;">BERABERE!</span>';
+                    gameOver = true;
+                } else {
+                    currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                    document.getElementById('turn').innerText = currentPlayer;
                 }
             }
 
-            function resetGame() {
-                board = ['', '', '', '', '', '', '', '', ''];
+            function checkWin(player) {
+                return wins.some combo => combo.every(i => board[i] === player);
+            }
+
+            function reset() {
+                board = Array(9).fill(null);
                 currentPlayer = 'X';
-                gameActive = true;
-                document.getElementById('status').innerText = 'Sıra: X';
+                gameOver = false;
                 document.querySelectorAll('.cell').forEach(cell => cell.innerText = '');
+                document.getElementById('message').innerHTML = '';
+                document.getElementById('turn').innerText = 'X';
             }
         </script>
         <br><br><a href="/" style="color: lime; font-size: 30px;">Ana Sayfa</a>
