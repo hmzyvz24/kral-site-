@@ -50,7 +50,7 @@ def ana_sayfa():
     <a href="/iletisim">İletişim</a> |
     <a href="/hesap-makinesi">Hesap Makinesi</a> |
     <a href="/flappy-bird">Flappy Bird</a> |
-    <a href="/xox">XOX Oyunu</a>
+    <a href="/xox">XOX</a>
 </nav>
     </body>
     </html>
@@ -214,73 +214,80 @@ def xox():
     return """
     <html>
     <head>
-        <title>XOX Oyunu</title>
+        <title>XOX</title>
         <style>
             body { background-image: url('https://i.pinimg.com/736x/68/fc/52/68fc522a8deaea59e9a1543df5380608.jpg'); background-size: cover; color: white; text-align: center; padding-top: 50px; font-family: Arial; }
-            h1 { font-style: italic; text-shadow: 2px 2px 8px black; }
-            #board { display: grid; grid-template-columns: repeat(3, 120px); gap: 10px; width: 380px; margin: 30px auto; }
-            .cell { width: 120px; height: 120px; background: rgba(0,0,0,0.7); font-size: 60px; color: lime; cursor: pointer; border: 4px solid lime; display: flex; align-items: center; justify-content: center; }
+            h1 { font-style: italic; text-shadow: 2px 2px 8px black; font-size: 60px; }
+            #board { display: grid; grid-template-columns: repeat(3, 130px); gap: 15px; width: 420px; margin: 40px auto; }
+            .cell { width: 130px; height: 130px; background: rgba(0,0,0,0.7); font-size: 80px; color: lime; cursor: pointer; border: 5px solid lime; display: flex; align-items: center; justify-content: center; border-radius: 15px; }
             .cell:hover { background: rgba(0,0,0,0.9); }
-            #message { font-size: 50px; margin: 30px; font-weight: bold; }
-            button { padding: 15px 30px; font-size: 25px; background: lime; color: black; border: none; cursor: pointer; margin-top: 20px; }
+            #message { font-size: 60px; margin: 40px; font-weight: bold; animation: pulse 1s infinite; }
+            @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+            button { padding: 15px 40px; font-size: 30px; background: lime; color: black; border: none; cursor: pointer; border-radius: 10px; }
         </style>
     </head>
     <body>
-        <h1>XOX Oyunu</h1>
-        <p style="font-size: 30px;">Sıra: <span id="turn">X</span></p>
-        <div id="board">
-            <div class="cell" onclick="play(0)"></div>
-            <div class="cell" onclick="play(1)"></div>
-            <div class="cell" onclick="play(2)"></div>
-            <div class="cell" onclick="play(3)"></div>
-            <div class="cell" onclick="play(4)"></div>
-            <div class="cell" onclick="play(5)"></div>
-            <div class="cell" onclick="play(6)"></div>
-            <div class="cell" onclick="play(7)"></div>
-            <div class="cell" onclick="play(8)"></div>
-        </div>
+        <h1>XOX</h1>
+        <p style="font-size: 35px;">Sıra: <span id="turn">X</span></p>
+        <div id="board"></div>
         <div id="message"></div>
-        <button onclick="reset()">Yeni Oyun</button>
+        <button onclick="resetGame()">Yeni Oyun</button>
         <script>
-            let board = Array(9).fill(null);
+            const board = document.getElementById('board');
+            const cells = [];
             let currentPlayer = 'X';
-            let gameOver = false;
+            let gameActive = true;
+            let gameState = ["", "", "", "", "", "", "", "", ""];
 
-            const wins = [
-                [0,1,2], [3,4,5], [6,7,8],
-                [0,3,6], [1,4,7], [2,5,8],
-                [0,4,8], [2,4,6]
+            const winningConditions = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8],
+                [0, 3, 6], [1, 4, 7], [2, 5, 8],
+                [0, 4, 8], [2, 4, 6]
             ];
 
-            function play(index) {
-                if (board[index] || gameOver) return;
-                board[index] = currentPlayer;
-                document.getElementsByClassName('cell')[index].innerText = currentPlayer;
+            function createBoard() {
+                board.innerHTML = '';
+                for (let i = 0; i < 9; i++) {
+                    const cell = document.createElement('div');
+                    cell.classList.add('cell');
+                    cell.addEventListener('click', () => handleCellClick(i));
+                    board.appendChild(cell);
+                    cells.push(cell);
+                }
+            }
 
-                if (checkWin(currentPlayer)) {
-                    document.getElementById('message').innerHTML = '<span style="color:red;">' + currentPlayer + ' KAZANDI! 👑</span>';
-                    gameOver = true;
-                } else if (board.every(cell => cell)) {
-                    document.getElementById('message').innerHTML = '<span style="color:yellow;">BERABERE!</span>';
-                    gameOver = true;
+            function handleCellClick(index) {
+                if (gameState[index] !== "" || !gameActive) return;
+                gameState[index] = currentPlayer;
+                cells[index].innerText = currentPlayer;
+                if (checkWinner()) {
+                    document.getElementById('message').innerHTML = `<span style="color: ${currentPlayer === 'X' ? 'cyan' : 'magenta'};">${currentPlayer} KAZANDI! 👑</span>`;
+                    gameActive = false;
+                } else if (gameState.every(cell => cell !== "")) {
+                    document.getElementById('message').innerHTML = '<span style="color: yellow;">BERABERE!</span>';
+                    gameActive = false;
                 } else {
                     currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
                     document.getElementById('turn').innerText = currentPlayer;
                 }
             }
 
-            function checkWin(player) {
-                return wins.some combo => combo.every(i => board[i] === player);
+            function checkWinner() {
+                return winningConditions.some(condition => {
+                    return condition.every(index => gameState[index] === currentPlayer);
+                });
             }
 
-            function reset() {
-                board = Array(9).fill(null);
+            function resetGame() {
+                gameState = ["", "", "", "", "", "", "", "", ""];
                 currentPlayer = 'X';
-                gameOver = false;
-                document.querySelectorAll('.cell').forEach(cell => cell.innerText = '');
-                document.getElementById('message').innerHTML = '';
+                gameActive = true;
                 document.getElementById('turn').innerText = 'X';
+                document.getElementById('message').innerHTML = '';
+                createBoard();
             }
+
+            createBoard();
         </script>
         <br><br><a href="/" style="color: lime; font-size: 30px;">Ana Sayfa</a>
     </body>
