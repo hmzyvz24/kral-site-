@@ -51,6 +51,7 @@ def ana_sayfa():
     <a href="/hesap-makinesi">Hesap Makinesi</a> |
     <a href="/flappy-bird">Flappy Bird</a> |
     <a href="/xox">XOX</a>
+    <a href="/yilan">Yılan</a>
 </nav>
     </body>
     </html>
@@ -214,16 +215,21 @@ def xox():
     return """
     <html>
     <head>
+     @app.route('/xox')
+def xox():
+    return """
+    <html>
+    <head>
         <title>XOX</title>
         <style>
             body { background-image: url('https://i.pinimg.com/736x/68/fc/52/68fc522a8deaea59e9a1543df5380608.jpg'); background-size: cover; color: white; text-align: center; padding-top: 50px; font-family: Arial; }
             h1 { font-style: italic; text-shadow: 2px 2px 8px black; font-size: 60px; }
-            #board { display: grid; grid-template-columns: repeat(3, 130px); gap: 15px; width: 420px; margin: 40px auto; }
-            .cell { width: 130px; height: 130px; background: rgba(0,0,0,0.7); font-size: 80px; color: lime; cursor: pointer; border: 5px solid lime; display: flex; align-items: center; justify-content: center; border-radius: 15px; }
+            #board { display: grid; grid-template-columns: repeat(3, 110px); gap: 10px; width: 350px; margin: 40px auto; }
+            .cell { width: 110px; height: 110px; background: rgba(0,0,0,0.7); font-size: 70px; color: lime; cursor: pointer; border: 4px solid lime; display: flex; align-items: center; justify-content: center; border-radius: 10px; }
             .cell:hover { background: rgba(0,0,0,0.9); }
             #message { font-size: 60px; margin: 40px; font-weight: bold; animation: pulse 1s infinite; }
             @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
-            button { padding: 15px 40px; font-size: 30px; background: lime; color: black; border: none; cursor: pointer; border-radius: 10px; }
+            button { padding: 15px 30px; font-size: 25px; background: lime; color: black; border: none; cursor: pointer; border-radius: 10px; margin-top: 20px; }
         </style>
     </head>
     <body>
@@ -260,6 +266,7 @@ def xox():
                 if (gameState[index] !== "" || !gameActive) return;
                 gameState[index] = currentPlayer;
                 cells[index].innerText = currentPlayer;
+
                 if (checkWinner()) {
                     document.getElementById('message').innerHTML = `<span style="color: ${currentPlayer === 'X' ? 'cyan' : 'magenta'};">${currentPlayer} KAZANDI! 👑</span>`;
                     gameActive = false;
@@ -288,6 +295,142 @@ def xox():
             }
 
             createBoard();
+        </script>
+        <br><br><a href="/" style="color: lime; font-size: 30px;">Ana Sayfa</a>
+    </body>
+    </html>
+    """
+    @app.route('/yilan')
+def yilan():
+    return """
+    <html>
+    <head>
+        <title>Yılan</title>
+        <style>
+            body { background-image: url('https://i.pinimg.com/736x/68/fc/52/68fc522a8deaea59e9a1543df5380608.jpg'); background-size: cover; color: white; text-align: center; padding-top: 20px; font-family: Arial; }
+            h1 { font-style: italic; text-shadow: 2px 2px 8px black; font-size: 60px; }
+            canvas { background: rgba(0,0,0,0.5); border: 5px solid lime; border-radius: 10px; }
+            #score { font-size: 35px; margin: 20px; font-style: italic; text-shadow: 2px 2px 8px black; }
+            button { padding: 15px 30px; font-size: 25px; background: lime; color: black; border: none; cursor: pointer; border-radius: 10px; margin-top: 20px; }
+            p { font-size: 25px; }
+        </style>
+    </head>
+    <body>
+        <h1>Yılan</h1>
+        <p>Ok tuşları veya WASD ile hareket et!</p>
+        <canvas id="canvas" width="400" height="400"></canvas>
+        <div id="score">Skor: 0</div>
+        <button onclick="resetGame()">Yeni Oyun</button>
+        <script>
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            const gridSize = 20;
+            const tileCount = canvas.width / gridSize;
+
+            let snake = [
+                {x: 10, y: 10}
+            ];
+            let food = {};
+            let dx = 0;
+            let dy = 0;
+            let score = 0;
+            let gameOver = false;
+
+            function randomFood() {
+                food = {
+                    x: Math.floor(Math.random() * tileCount),
+                    y: Math.floor(Math.random() * tileCount)
+                };
+            }
+
+            function drawGame() {
+                ctx.fillStyle = 'rgba(0,0,0,0.8)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Yılan
+                ctx.fillStyle = 'lime';
+                snake.forEach((part, index) => {
+                    ctx.fillRect(part.x * gridSize, part.y * gridSize, gridSize - 2, gridSize - 2);
+                    if (index === 0) ctx.fillStyle = 'yellow'; // Kafa sarı
+                });
+
+                // Yem
+                ctx.fillStyle = 'red';
+                ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
+
+                // Skor
+                document.getElementById('score').innerText = 'Skor: ' + score;
+            }
+
+            function update() {
+                if (gameOver) return;
+
+                const head = {x: snake[0].x + dx, y: snake[0].y + dy};
+
+                // Duvar çarpışma
+                if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) {
+                    gameOver = true;
+                    document.getElementById('score').innerText = 'Oyun Bitti! Skor: ' + score;
+                    return;
+                }
+
+                // Kendine çarpışma
+                for (let part of snake) {
+                    if (head.x === part.x && head.y === part.y) {
+                        gameOver = true;
+                        document.getElementById('score').innerText = 'Oyun Bitti! Skor: ' + score;
+                        return;
+                    }
+                }
+
+                snake.unshift(head);
+
+                // Yem yeme
+                if (head.x === food.x && head.y === food.y) {
+                    score++;
+                    randomFood();
+                } else {
+                    snake.pop();
+                }
+
+                drawGame();
+            }
+
+            function changeDirection(event) {
+                const LEFT = 37;
+                const RIGHT = 39;
+                const UP = 38;
+                const DOWN = 40;
+                const W = 87;
+                const A = 65;
+                const S = 83;
+                const D = 68;
+
+                const key = event.keyCode;
+                if (key === LEFT || key === A) {
+                    if (dx !== 1) { dx = -1; dy = 0; }
+                } else if (key === RIGHT || key === D) {
+                    if (dx !== -1) { dx = 1; dy = 0; }
+                } else if (key === UP || key === W) {
+                    if (dy !== 1) { dx = 0; dy = -1; }
+                } else if (key === DOWN || key === S) {
+                    if (dy !== -1) { dx = 0; dy = 1; }
+                }
+            }
+
+            function resetGame() {
+                snake = [{x: 10, y: 10}];
+                dx = 0;
+                dy = 0;
+                score = 0;
+                gameOver = false;
+                randomFood();
+                drawGame();
+            }
+
+            document.addEventListener('keydown', changeDirection);
+            randomFood();
+            setInterval(update, 150);
         </script>
         <br><br><a href="/" style="color: lime; font-size: 30px;">Ana Sayfa</a>
     </body>
