@@ -52,6 +52,7 @@ def ana_sayfa():
     <a href="/flappy-bird">Flappy Bird</a> |
     <a href="/xox">XOX</a>
     <a href="/yilan">Yılan</a>
+    <a href="/satranç">Satranç</a>
 </nav>
     </body>
     </html>
@@ -233,14 +234,32 @@ def xox():
         </style>
     </head>
     <body>
+@app.route('/xox')
+def xox():
+    return """
+    <html>
+    <head>
+        <title>XOX</title>
+        <style>
+            body { background-image: url('https://i.pinimg.com/736x/68/fc/52/68fc522a8deaea59e9a1543df5380608.jpg'); background-size: cover; color: white; text-align: center; padding-top: 50px; font-family: Arial; }
+            h1 { font-style: italic; text-shadow: 2px 2px 8px black; font-size: 60px; }
+            #board { display: grid; grid-template-columns: repeat(3, 100px); gap: 10px; width: 330px; margin: 40px auto; }
+            .cell { width: 100px; height: 100px; background: rgba(0,0,0,0.7); font-size: 65px; color: lime; cursor: pointer; border: 4px solid lime; display: flex; align-items: center; justify-content: center; border-radius: 10px; }
+            .cell:hover { background: rgba(0,0,0,0.9); }
+            #message { font-size: 55px; margin: 40px; font-weight: bold; animation: pulse 1s infinite; }
+            @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+            button { padding: 15px 30px; font-size: 25px; background: lime; color: black; border: none; cursor: pointer; border-radius: 10px; margin-top: 20px; }
+        </style>
+    </head>
+    <body>
         <h1>XOX</h1>
-        <p style="font-size: 35px;">Sıra: <span id="turn">X</span></p>
+        <p style="font-size: 30px;">Sıra: <span id="turn">X</span></p>
         <div id="board"></div>
         <div id="message"></div>
         <button onclick="resetGame()">Yeni Oyun</button>
         <script>
-            const board = document.getElementById('board');
-            const cells = [];
+            const boardElement = document.getElementById('board');
+            let cells = [];
             let currentPlayer = 'X';
             let gameActive = true;
             let gameState = ["", "", "", "", "", "", "", "", ""];
@@ -252,12 +271,13 @@ def xox():
             ];
 
             function createBoard() {
-                board.innerHTML = '';
+                boardElement.innerHTML = '';
+                cells = [];
                 for (let i = 0; i < 9; i++) {
                     const cell = document.createElement('div');
                     cell.classList.add('cell');
                     cell.addEventListener('click', () => handleCellClick(i));
-                    board.appendChild(cell);
+                    boardElement.appendChild(cell);
                     cells.push(cell);
                 }
             }
@@ -294,13 +314,14 @@ def xox():
                 createBoard();
             }
 
+            // İlk yüklemede tahtayı oluştur
             createBoard();
         </script>
         <br><br><a href="/" style="color: lime; font-size: 30px;">Ana Sayfa</a>
     </body>
     </html>
     """
-    @app.route('/yilan')
+@app.route('/yilan')
 def yilan():
     return """
     <html>
@@ -436,5 +457,118 @@ def yilan():
     </body>
     </html>
     """
+@app.route('/satranç')
+def satranc():
+    return """
+    <html>
+    <head>
+        <title>Satranç</title>
+        <style>
+            body { background-image: url('https://i.pinimg.com/736x/68/fc/52/68fc522a8deaea59e9a1543df5380608.jpg'); background-size: cover; color: white; text-align: center; padding-top: 20px; font-family: Arial; }
+            h1 { font-style: italic; text-shadow: 2px 2px 8px black; font-size: 60px; }
+            #board { display: grid; grid-template-columns: repeat(8, 50px); gap: 2px; width: 402px; margin: 20px auto; background: rgba(0,0,0,0.5); padding: 2px; border-radius: 10px; }
+            .cell { width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; font-size: 25px; cursor: pointer; }
+            .white { background: #f0d9b5; }
+            .black { background: #b58863; }
+            .piece { font-size: 30px; user-select: none; }
+            #message { font-size: 30px; margin: 20px; font-style: italic; text-shadow: 2px 2px 8px black; }
+            button { padding: 15px 30px; font-size: 25px; background: lime; color: black; border: none; cursor: pointer; border-radius: 10px; margin-top: 20px; }
+        </style>
+    </head>
+    <body>
+@app.route('/satranç')
+def satranc():
+    return """
+    <html>
+    <head>
+        <title>Satranç</title>
+        <style>
+            body { background-image: url('https://i.pinimg.com/736x/68/fc/52/68fc522a8deaea59e9a1543df5380608.jpg'); background-size: cover; color: white; text-align: center; padding-top: 20px; font-family: Arial; }
+            h1 { font-style: italic; text-shadow: 2px 2px 8px black; font-size: 60px; }
+            #board { display: grid; grid-template-columns: repeat(8, 50px); gap: 2px; width: 402px; margin: 20px auto; background: rgba(0,0,0,0.5); padding: 2px; border-radius: 10px; }
+            .cell { width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; font-size: 25px; cursor: pointer; }
+            .white { background: #f0d9b5; }
+            .black { background: #b58863; }
+            .selected { border: 2px solid yellow; }
+            .valid-move { background: rgba(0,255,0,0.3); }
+            .piece { font-size: 30px; user-select: none; }
+            #message { font-size: 30px; margin: 20px; font-style: italic; text-shadow: 2px 2px 8px black; }
+            button { padding: 15px 30px; font-size: 25px; background: lime; color: black; border: none; cursor: pointer; border-radius: 10px; margin-top: 20px; }
+        </style>
+    </head>
+    <body>
+        <h1>Satranç</h1>
+        <p>Sıra: <span id="turn">Beyaz</span></p>
+        <div id="board"></div>
+        <div id="message"></div>
+        <button onclick="resetGame()">Yeni Oyun</button>
+        <script>
+            const board = document.getElementById('board');
+            let gameState = Array(64).fill(null);
+            let selectedPiece = null;
+            let currentTurn = 'white';
+            const pieces = {
+                '♙': { color: 'white', moves: [[0, 1], [0, 2]] }, // Piyon (ilk hamle 2 kare)
+                '♟': { color: 'black', moves: [[0, -1], [0, -2]] },
+                '♖': { color: 'white', moves: straightMoves },
+                '♜': { color: 'black', moves: straightMoves },
+                '♘': { color: 'white', moves: knightMoves },
+                '♞': { color: 'black', moves: knightMoves },
+                '♗': { color: 'white', moves: diagonalMoves },
+                '♝': { color: 'black', moves: diagonalMoves },
+                '♕': { color: 'white', moves: queenMoves },
+                '♛': { color: 'black', moves: queenMoves },
+                '♔': { color: 'white', moves: kingMoves },
+                '♚': { color: 'black', moves: kingMoves }
+            };
+
+            function straightMoves(x, y) {
+                let moves = [];
+                for (let i = 1; i < 8; i++) {
+                    moves.push([x + i, y]); moves.push([x - i, y]);
+                    moves.push([x, y + i]); moves.push([x, y - i]);
+                }
+                return moves;
+            }
+
+            function diagonalMoves(x, y) {
+                let moves = [];
+                for (let i = 1; i < 8; i++) {
+                    moves.push([x + i, y + i]); moves.push([x - i, y - i]);
+                    moves.push([x + i, y - i]); moves.push([x - i, y + i]);
+                }
+                return moves;
+            }
+
+            function knightMoves(x, y) {
+                return [
+                    [x+2, y+1], [x+2, y-1], [x-2, y+1], [x-2, y-1],
+                    [x+1, y+2], [x+1, y-2], [x-1, y+2], [x-1, y-2]
+                ];
+            }
+
+            function kingMoves(x, y) {
+                let moves = [];
+                for (let i = -1; i <= 1; i++) {
+                    for (let j = -1; j <= 1; j++) {
+                        if (i === 0 && j === 0) continue;
+                        moves.push([x + i, y + j]);
+                    }
+                }
+                return moves;
+            }
+
+            function queenMoves(x, y) {
+                return [...straightMoves(x, y), ...diagonalMoves(x, y)];
+            }
+
+            function createBoard() {
+                board.innerHTML = '';
+                for (let y = 0; y < 8; y++) {
+                    for (let x = 0; x < 8; x++) {
+                        const index = y * 8 + x;
+                        const cell = document.createElement('div');
+                        cell.classList.add('cell');
+                       
 if __name__ == '__main__':
     app.run(debug=True)
