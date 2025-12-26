@@ -572,7 +572,6 @@ def satranc():
                     for (let x = 0; x < 8; x++) {
                         const index = y * 8 + x;
                         const cell = document.createElement('div');
-                        cell.classList.add('cell');
-                       
+                        cell.classList.add('cell')
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=8080)
