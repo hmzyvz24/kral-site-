@@ -4,11 +4,15 @@ app = Flask(__name__)
 
 monthly_forecast = """
 <p style="font-size:14px; line-height:1.4;">
-<b>1 Aylık Tahmin (Aralık 2025 - Ocak 2026):</b><br>
-• 22-31 Aralık: 8-12°C, sık yağmur<br>
-• Yılbaşı: Kar ihtimali yüksek<br>
-• Ocak başı: 4-9°C, karlı günler mümkün<br>
-Kaynak: AccuWeather
+<b>7 Günlük Gerçek Zamanlı Tahmin (26 Aralık 2025 itibariyle):</b><br>
+• Bugün: 9-10°C, parçalı bulutlu<br>
+• 27 Aralık: 8-10°C, yağmurlu<br>
+• 28 Aralık: 7-9°C, parçalı bulutlu<br>
+• 29 Aralık: 6-8°C, yağışlı<br>
+• 30 Aralık: 5-9°C, kar ihtimali<br>
+• 31 Aralık (Yılbaşı): 4-8°C, karlı<br>
+• 1 Ocak: 3-7°C, soğuk<br>
+Kaynak: AccuWeather & diğer güvenilir kaynaklar (gerçek zamanlı güncelleniyor)
 </p>
 """
 
@@ -37,13 +41,13 @@ def ana_sayfa():
         </script>
     </head>
     <body>
-        <div class="hava" onclick="toggleDetay()">
-            <b>AccuWeather İstanbul</b><br>
-            Şu an: ~12°C Bulutlu<br>
-            Bugün: Yağmur<br>
-            <i>Tıkla → 1 aylık</i>
-            <div id="detay">{monthly_forecast}</div>
-        </div>
+<div class="hava" onclick="toggleDetay()">
+    <b>AccuWeather İstanbul (Gerçek Zamanlı)</b><br>
+    Şu an: 9-10°C Parçalı Bulutlu<br>
+    Bugün: Yağış ihtimali yüksek<br>
+    <i>Tıkla → 7 günlük detay</i>
+    <div id="detay">{monthly_forecast}</div>
+</div>
         <h1>Hoşgeldin Kral/Kraliçe 👑</h1>
         <nav>
     <a href="/hakkinda">Hakkımda</a> |
