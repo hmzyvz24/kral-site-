@@ -16,7 +16,7 @@ Kaynak: AccuWeather & diğer güvenilir kaynaklar (gerçek zamanlı güncelleniy
 </p>
 """
 
-@app.route('/')
+    @app.route('/')
 def ana_sayfa():
     return f"""
     <html>
@@ -24,15 +24,15 @@ def ana_sayfa():
         <title>Kral Site</title>
         <meta name="google-site-verification" content="5V83CDxeEdCKTcIDpNrnb05zFAYpj6BlIEgrxW2M6sQ" />
         <style>
-    body { font-family: 'Arial Black', Arial; text-align: center; background-image: url('https://i.pinimg.com/736x/68/fc/52/68fc522a8deaea59e9a1543df5380608.jpg'); background-size: cover; background-attachment: fixed; color: white; margin: 0; padding: 50px; }
-    h1, p, a, span { font-style: italic; text-shadow: 2px 2px 8px black; }
-    h1 { font-size: 70px; animation: glow 2s infinite; }
-    @keyframes glow { 0% { text-shadow: 0 0 20px yellow; } 50% { text-shadow: 0 0 40px yellow; } 100% { text-shadow: 0 0 20px yellow; } }
-    .hava { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.7); padding: 8px; border-radius: 8px; font-size: 12px; cursor: pointer; width: 180px; }
-    .hava:hover { background: rgba(0,0,0,0.9); }
-    #detay { display: none; }
-    nav a { color: lime; font-size: 30px; margin: 30px; text-decoration: none; }
-</style>
+            body {{ font-family: 'Arial Black', Arial; text-align: center; background-image: url('https://i.pinimg.com/736x/68/fc/52/68fc522a8deaea59e9a1543df5380608.jpg'); background-size: cover; background-attachment: fixed; color: white; margin: 0; padding: 50px; }}
+            h1, p, a, span {{ font-style: italic; text-shadow: 2px 2px 8px black; }}
+            h1 {{ font-size: 70px; animation: glow 2s infinite; }}
+            @keyframes glow {{ 0% {{ text-shadow: 0 0 20px yellow; }} 50% {{ text-shadow: 0 0 40px yellow; }} 100% {{ text-shadow: 0 0 20px yellow; }} }}
+            .hava {{ position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.7); padding: 8px; border-radius: 8px; font-size: 12px; cursor: pointer; width: 180px; }}
+            .hava:hover {{ background: rgba(0,0,0,0.9); }}
+            #detay {{ display: none; }}
+            nav a {{ color: lime; font-size: 30px; margin: 30px; text-decoration: none; }}
+        </style>
         <script>
             function toggleDetay() {{
                 var d = document.getElementById('detay');
@@ -41,27 +41,26 @@ def ana_sayfa():
         </script>
     </head>
     <body>
-<div class="hava" onclick="toggleDetay()">
-    <b>AccuWeather İstanbul (Gerçek Zamanlı)</b><br>
-    Şu an: 9-10°C Parçalı Bulutlu<br>
-    Bugün: Yağış ihtimali yüksek<br>
-    <i>Tıkla → 7 günlük detay</i>
-    <div id="detay">{monthly_forecast}</div>
-</div>
+        <div class="hava" onclick="toggleDetay()">
+            <b>AccuWeather İstanbul (Gerçek Zamanlı)</b><br>
+            Şu an: 9-10°C Parçalı Bulutlu<br>
+            Bugün: Yağış ihtimali yüksek<br>
+            <i>Tıkla → 7 günlük detay</i>
+            <div id="detay">{monthly_forecast}</div>
+        </div>
         <h1>Hoşgeldin Kral/Kraliçe 👑</h1>
         <nav>
-    <a href="/hakkinda">Hakkımda</a> |
-    <a href="/iletisim">İletişim</a> |
-    <a href="/hesap-makinesi">Hesap Makinesi</a> |
-    <a href="/flappy-bird">Flappy Bird</a> |
-    <a href="/xox">XOX</a>
-    <a href="/yilan">Yılan</a>
-    <a href="/satranç">Satranç</a>
-</nav>
+            <a href="/hakkinda">Hakkımda</a> |
+            <a href="/iletisim">İletişim</a> |
+            <a href="/hesap-makinesi">Hesap Makinesi</a> |
+            <a href="/flappy-bird">Flappy Bird</a> |
+            <a href="/xox">XOX</a> |
+            <a href="/yilan">Yılan</a> |
+            <a href="/satranç">Satranç</a>
+        </nav>
     </body>
     </html>
     """
-
 @app.route('/hakkinda')
 def hakkinda():
     return """
