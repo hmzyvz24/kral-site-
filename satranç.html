@@ -8,39 +8,202 @@
         body { font-family: 'Arial Black', Arial; text-align: center; background-image: url('https://i.pinimg.com/736x/68/fc/52/68fc522a8deaea59e9a1543df5380608.jpg'); background-size: cover; background-attachment: fixed; color: white; margin: 0; padding: 20px; }
         h1 { font-style: italic; text-shadow: 2px 2px 8px black; font-size: 60px; animation: glow 2s infinite; }
         @keyframes glow { 0% { text-shadow: 0 0 20px yellow; } 50% { text-shadow: 0 0 40px yellow; } 100% { text-shadow: 0 0 20px yellow; } }
-        #board { display: grid; grid-template-columns: repeat(8, 50px); gap: 2px; width: 402px; margin: 20px auto; background: rgba(0,0,0,0.5); padding: 2px; border-radius: 10px; }
-        .cell { width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; font-size: 25px; }
+        #board { display: grid; grid-template-columns: repeat(8, 60px); gap: 0; width: 480px; margin: 30px auto; border: 5px solid lime; border-radius: 10px; }
+        .square { width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 45px; }
         .white { background: #f0d9b5; }
         .black { background: #b58863; }
-        .piece { font-size: 30px; }
+        .selected { box-shadow: 0 0 15px 5px yellow inset; }
+        .possible { box-shadow: 0 0 15px 5px lime inset; }
+        .capture { box-shadow: 0 0 15px 5px red inset; }
+        #turn { font-size: 30px; margin: 20px; }
         button { padding: 15px 30px; font-size: 25px; background: lime; color: black; border: none; cursor: pointer; border-radius: 10px; margin-top: 20px; }
         a { color: lime; font-size: 30px; text-decoration: none; }
     </style>
 </head>
 <body>
     <h1>Satranç</h1>
+    <p id="turn">Sıra: Beyaz</p>
     <div id="board"></div>
-    <button onclick="resetGame()">Yeni Oyun</button>
+    <button onclick="newGame()">Yeni Oyun</button>
     <script>
         const board = document.getElementById('board');
+        let selected = null;
+        let turn = 'white';
+        let gameBoard = [
+            ['♜','♞','♝','♛','♚','♝','♞','♜'],
+            ['♟','♟','♟','♟','♟','♟','♟','♟'],
+            [null,null,null,null,null,null,null,null],
+            [null,null,null,null,null,null,null,null],
+            [null,null,null,null,null,null,null,null],
+            [null,null,null,null,null,null,null,null],
+            ['♙','♙','♙','♙','♙','♙','♙','♙'],
+            ['♖','♘','♗','♕','♔','♗','♘','♖']
+        ];
+
+        const pieceValues = {
+            '♙': 'white pawn', '♟': 'black pawn',
+            '♖': 'white rook', '♜': 'black rook',
+            '♘': 'white knight', '♞': 'black knight',
+            '♗': 'white bishop', '♝': 'black bishop',
+            '♕': 'white queen', '♛': 'black queen',
+            '♔': 'white king', '♚': 'black king'
+        };
+
+        function isWhite(piece) { return piece && pieceValues[piece].includes('white'); }
+        function isBlack(piece) { return piece && pieceValues[piece].includes('black'); }
 
         function createBoard() {
             board.innerHTML = '';
             for (let y = 0; y < 8; y++) {
                 for (let x = 0; x < 8; x++) {
-                    const cell = document.createElement('div');
-                    cell.classList.add('cell');
-                    cell.classList.add((x + y) % 2 === 0 ? 'white' : 'black');
-                    if (y === 0) cell.innerHTML = '<span class="piece">' + (x === 0 || x === 7 ? '♖' : x === 1 || x === 6 ? '♘' : x === 2 || x === 5 ? '♗' : x === 3 ? '♕' : '♔') + '</span>';
-                    if (y === 1) cell.innerHTML = '<span class="piece">♙</span>';
-                    if (y === 6) cell.innerHTML = '<span class="piece">♟</span>';
-                    if (y === 7) cell.innerHTML = '<span class="piece">' + (x === 0 || x === 7 ? '♜' : x === 1 || x === 6 ? '♞' : x === 2 || x === 5 ? '♝' : x === 3 ? '♛' : '♚') + '</span>';
-                    board.appendChild(cell);
+                    const square = document.createElement('div');
+                    square.classList.add('square', (x + y) % 2 === 0 ? 'white' : 'black');
+                    square.dataset.x = x;
+                    square.dataset.y = y;
+                    if (gameBoard[y][x]) square.innerHTML = gameBoard[y][x];
+                    square.addEventListener('click', () => handleClick(x, y));
+                    board.appendChild(square);
                 }
             }
         }
 
-        function resetGame() {
+        function handleClick(x, y) {
+            const piece = gameBoard[y][x];
+            const square = board.children[y * 8 + x];
+
+            if (selected) {
+                if (isValidMove(selected.x, selected.y, x, y)) {
+                    gameBoard[y][x] = gameBoard[selected.y][selected.x];
+                    gameBoard[selected.y][selected.x] = null;
+                    turn = turn === 'white' ? 'black' : 'white';
+                    document.getElementById('turn').innerText = 'Sıra: ' + (turn === 'white' ? 'Beyaz' : 'Siyah');
+                }
+                clearHighlights();
+                selected = null;
+            } else if (piece && ((turn === 'white' && isWhite(piece)) || (turn === 'black' && isBlack(piece)))) {
+                selected = {x, y};
+                square.classList.add('selected');
+                highlightMoves(x, y, piece);
+            }
+        }
+
+        function clearHighlights() {
+            document.querySelectorAll('.square').forEach(sq => {
+                sq.classList.remove('selected', 'possible', 'capture');
+            });
+        }
+
+        function highlightMoves(x, y, piece) {
+            const type = pieceValues[piece].split(' ')[1];
+            let moves = [];
+
+            if (type === 'pawn') {
+                const dir = isWhite(piece) ? -1 : 1;
+                const startRow = isWhite(piece) ? 6 : 1;
+                if (!gameBoard[y + dir][x]) {
+                    moves.push([x, y + dir]);
+                    if (y === startRow && !gameBoard[y + 2 * dir][x]) moves.push([x, y + 2 * dir]);
+                }
+                [-1, 1].forEach(dx => {
+                    if (gameBoard[y + dir] && gameBoard[y + dir][x + dx] && isBlack(gameBoard[y + dir][x + dx]) && !isWhite(piece) || isWhite(gameBoard[y + dir][x + dx]) && isWhite(piece)) {
+                        moves.push([x + dx, y + dir]);
+                    }
+                });
+            } else if (type === 'rook') {
+                [[1,0],[-1,0],[0,1],[0,-1]].forEach(d => {
+                    for (let i = 1; i < 8; i++) {
+                        const nx = x + i * d[0];
+                        const ny = y + i * d[1];
+                        if (nx < 0 || nx >= 8 || ny < 0 || ny >= 8) break;
+                        if (gameBoard[ny][nx]) {
+                            if ((isWhite(piece) && isBlack(gameBoard[ny][nx])) || (isBlack(piece) && isWhite(gameBoard[ny][nx]))) moves.push([nx, ny]);
+                            break;
+                        }
+                        moves.push([nx, ny]);
+                    }
+                });
+            } else if (type === 'knight') {
+                [[1,2],[1,-2],[-1,2],[-1,-2],[2,1],[2,-1],[-2,1],[-2,-1]].forEach(d => {
+                    const nx = x + d[0];
+                    const ny = y + d[1];
+                    if (nx >= 0 && nx < 8 && ny >= 0 && ny < 8) {
+                        if (!gameBoard[ny][nx] || (isWhite(piece) && isBlack(gameBoard[ny][nx])) || (isBlack(piece) && isWhite(gameBoard[ny][nx]))) {
+                            moves.push([nx, ny]);
+                        }
+                    }
+                });
+            } else if (type === 'bishop') {
+                [[1,1],[1,-1],[-1,1],[-1,-1]].forEach(d => {
+                    for (let i = 1; i < 8; i++) {
+                        const nx = x + i * d[0];
+                        const ny = y + i * d[1];
+                        if (nx < 0 || nx >= 8 || ny < 0 || ny >= 8) break;
+                        if (gameBoard[ny][nx]) {
+                            if ((isWhite(piece) && isBlack(gameBoard[ny][nx])) || (isBlack(piece) && isWhite(gameBoard[ny][nx]))) moves.push([nx, ny]);
+                            break;
+                        }
+                        moves.push([nx, ny]);
+                    }
+                });
+            } else if (type === 'queen') {
+                [[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]].forEach(d => {
+                    for (let i = 1; i < 8; i++) {
+                        const nx = x + i * d[0];
+                        const ny = y + i * d[1];
+                        if (nx < 0 || nx >= 8 || ny < 0 || ny >= 8) break;
+                        if (gameBoard[ny][nx]) {
+                            if ((isWhite(piece) && isBlack(gameBoard[ny][nx])) || (isBlack(piece) && isWhite(gameBoard[ny][nx]))) moves.push([nx, ny]);
+                            break;
+                        }
+                        moves.push([nx, ny]);
+                    }
+                });
+            } else if (type === 'king') {
+                [[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]].forEach(d => {
+                    const nx = x + d[0];
+                    const ny = y + d[1];
+                    if (nx >= 0 && nx < 8 && ny >= 0 && ny < 8) {
+                        if (!gameBoard[ny][nx] || (isWhite(piece) && isBlack(gameBoard[ny][nx])) || (isBlack(piece) && isWhite(gameBoard[ny][nx]))) {
+                            moves.push([nx, ny]);
+                        }
+                    }
+                });
+            }
+
+            moves.forEach(([mx, my]) => {
+                const targetSquare = board.children[my * 8 + mx];
+                if (gameBoard[my][mx]) {
+                    targetSquare.classList.add('capture');
+                } else {
+                    targetSquare.classList.add('possible');
+                }
+            });
+        }
+
+        function isValidMove(fromX, fromY, toX, toY) {
+            const piece = gameBoard[fromY][fromX];
+            if (!piece) return false;
+            // Burada daha gelişmiş kontrol eklenebilir (şah çekme vs.), ama temel hareket için yeterli
+            const target = gameBoard[toY][toX];
+            if (target && ((isWhite(piece) && isWhite(target)) || (isBlack(piece) && isBlack(target)))) return false;
+            return true;
+        }
+
+        function newGame() {
+            gameBoard = [
+                ['♜','♞','♝','♛','♚','♝','♞','♜'],
+                ['♟','♟','♟','♟','♟','♟','♟','♟'],
+                [null,null,null,null,null,null,null,null],
+                [null,null,null,null,null,null,null,null],
+                [null,null,null,null,null,null,null,null],
+                [null,null,null,null,null,null,null,null],
+                ['♙','♙','♙','♙','♙','♙','♙','♙'],
+                ['♖','♘','♗','♕','♔','♗','♘','♖']
+            ];
+            turn = 'white';
+            document.getElementById('turn').innerText = 'Sıra: Beyaz';
+            selected = null;
+            clearHighlights();
             createBoard();
         }
 
