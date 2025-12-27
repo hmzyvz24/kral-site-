@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hesap Makinesi</title>
+    <style>
+        body { font-family: 'Arial Black', Arial; text-align: center; background-image: url('https://i.pinimg.com/736x/68/fc/52/68fc522a8deaea59e9a1543df5380608.jpg'); background-size: cover; background-attachment: fixed; color: white; margin: 0; padding: 50px; }
+        h1 { font-style: italic; text-shadow: 2px 2px 8px black; font-size: 70px; animation: glow 2s infinite; }
+        @keyframes glow { 0% { text-shadow: 0 0 20px yellow; } 50% { text-shadow: 0 0 40px yellow; } 100% { text-shadow: 0 0 20px yellow; } }
+        button { background: lime; color: black; font-size: 25px; padding: 10px 20px; margin: 5px; border: none; cursor: pointer; }
+        input { width: 300px; height: 50px; font-size: 30px; }
+        a { color: lime; font-size: 30px; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <h1>Hesap Makinesi</h1>
+    <input type="text" id="sonuc"><br><br>
+    <button onclick="ekle('7')">7</button>
+    <button onclick="ekle('8')">8</button>
+    <button onclick="ekle('9')">9</button>
+    <button onclick="ekle('/')">/</button><br>
+    <button onclick="ekle('4')">4</button>
+    <button onclick="ekle('5')">5</button>
+    <button onclick="ekle('6')">6</button>
+    <button onclick="ekle('*')">*</button><br>
+    <button onclick="ekle('1')">1</button>
+    <button onclick="ekle('2')">2</button>
+    <button onclick="ekle('3')">3</button>
+    <button onclick="ekle('-')">-</button><br>
+    <button onclick="ekle('0')">0</button>
+    <button onclick="ekle('.')">.</button>
+    <button onclick="hesapla()">=</button>
+    <button onclick="ekle('+')">+</button><br><br>
+    <button onclick="temizle()">Temizle</button>
+    <script>
+        function ekle(d) { document.getElementById('sonuc').value += d; }
+        function hesapla() { try { document.getElementById('sonuc').value = eval(document.getElementById('sonuc').value); } catch(e) { alert('Hata'); } }
+        function temizle() { document.getElementById('sonuc').value = ''; }
+    </script>
+    <br><br><a href="index.html">Ana Sayfa</a>
+</body>
+</html>
