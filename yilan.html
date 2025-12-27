@@ -11,12 +11,12 @@
         canvas { background: rgba(0,0,0,0.5); border: 5px solid lime; border-radius: 10px; }
         #score { font-size: 35px; margin: 20px; font-style: italic; text-shadow: 2px 2px 8px black; }
         button { padding: 15px 30px; font-size: 25px; background: lime; color: black; border: none; cursor: pointer; border-radius: 10px; margin-top: 20px; }
-        p { font-size: 25px; }
+        p { font-size: 25px; font-style: italic; text-shadow: 2px 2px 8px black; }
         a { color: lime; font-size: 30px; text-decoration: none; }
     </style>
 </head>
 <body>
-    <h1>Yılan</h1>
+    <h1>Yılan Oyunu</h1>
     <p>Ok tuşları veya WASD ile hareket et!</p>
     <canvas id="canvas" width="400" height="400"></canvas>
     <div id="score">Skor: 0</div>
@@ -28,29 +28,28 @@
         const tileCount = canvas.width / gridSize;
 
         let snake = [{x: 10, y: 10}];
-        let food = {};
+        let food = {x: 15, y: 15};
         let dx = 0;
         let dy = 0;
         let score = 0;
         let gameOver = false;
 
-        function randomFood() {
-            food = {x: Math.floor(Math.random() * tileCount), y: Math.floor(Math.random() * tileCount)};
-        }
-
         function drawGame() {
+            // Arka plan
             ctx.fillStyle = 'rgba(0,0,0,0.8)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            ctx.fillStyle = 'lime';
+            // Yılan (kafa sarı, gövde lime)
             snake.forEach((part, index) => {
+                ctx.fillStyle = index === 0 ? 'yellow' : 'lime';
                 ctx.fillRect(part.x * gridSize, part.y * gridSize, gridSize - 2, gridSize - 2);
-                if (index === 0) ctx.fillStyle = 'yellow';
             });
 
+            // Yem (kırmızı)
             ctx.fillStyle = 'red';
             ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
 
+            // Skor
             document.getElementById('score').innerText = 'Skor: ' + score;
         }
 
@@ -59,25 +58,29 @@
 
             const head = {x: snake[0].x + dx, y: snake[0].y + dy};
 
+            // Duvar çarpışma
             if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) {
                 gameOver = true;
                 document.getElementById('score').innerText = 'Oyun Bitti! Skor: ' + score;
                 return;
             }
 
-            for (let part of snake) {
-                if (head.x === part.x && head.y === part.y) {
-                    gameOver = true;
-                    document.getElementById('score').innerText = 'Oyun Bitti! Skor: ' + score;
-                    return;
-                }
+            // Kendine çarpışma
+            if (snake.some(part => part.x === head.x && part.y === head.y)) {
+                gameOver = true;
+                document.getElementById('score').innerText = 'Oyun Bitti! Skor: ' + score;
+                return;
             }
 
             snake.unshift(head);
 
+            // Yem yeme
             if (head.x === food.x && head.y === food.y) {
                 score++;
-                randomFood();
+                food = {
+                    x: Math.floor(Math.random() * tileCount),
+                    y: Math.floor(Math.random() * tileCount)
+                };
             } else {
                 snake.pop();
             }
@@ -85,13 +88,12 @@
             drawGame();
         }
 
-        function changeDirection(event) {
-            const LEFT = 37, RIGHT = 39, UP = 38, DOWN = 40, W = 87, A = 65, S = 83, D = 68;
-            const key = event.keyCode;
-            if (key === LEFT || key === A) if (dx !== 1) { dx = -1; dy = 0; }
-            if (key === RIGHT || key === D) if (dx !== -1) { dx = 1; dy = 0; }
-            if (key === UP || key === W) if (dy !== 1) { dx = 0; dy = -1; }
-            if (key === DOWN || key === S) if (dy !== -1) { dx = 0; dy = 1; }
+        function changeDirection(e) {
+            const key = e.keyCode;
+            if ((key === 37 || key === 65) && dx !== 1) { dx = -1; dy = 0; } // Sol / A
+            if ((key === 39 || key === 68) && dx !== -1) { dx = 1; dy = 0; } // Sağ / D
+            if ((key === 38 || key === 87) && dy !== 1) { dx = 0; dy = -1; } // Yukarı / W
+            if ((key === 40 || key === 83) && dy !== -1) { dx = 0; dy = 1; } // Aşağı / S
         }
 
         function resetGame() {
@@ -100,12 +102,12 @@
             dy = 0;
             score = 0;
             gameOver = false;
-            randomFood();
+            food = {x: 15, y: 15};
             drawGame();
         }
 
         document.addEventListener('keydown', changeDirection);
-        randomFood();
+        drawGame();
         setInterval(update, 150);
     </script>
     <br><br><a href="index.html">Ana Sayfa</a>
