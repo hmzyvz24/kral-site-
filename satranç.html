@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Satranç</title>
+    <style>
+        body { font-family: 'Arial Black', Arial; text-align: center; background-image: url('https://i.pinimg.com/736x/68/fc/52/68fc522a8deaea59e9a1543df5380608.jpg'); background-size: cover; background-attachment: fixed; color: white; margin: 0; padding: 20px; }
+        h1 { font-style: italic; text-shadow: 2px 2px 8px black; font-size: 60px; animation: glow 2s infinite; }
+        @keyframes glow { 0% { text-shadow: 0 0 20px yellow; } 50% { text-shadow: 0 0 40px yellow; } 100% { text-shadow: 0 0 20px yellow; } }
+        #board { display: grid; grid-template-columns: repeat(8, 50px); gap: 2px; width: 402px; margin: 20px auto; background: rgba(0,0,0,0.5); padding: 2px; border-radius: 10px; }
+        .cell { width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; font-size: 25px; }
+        .white { background: #f0d9b5; }
+        .black { background: #b58863; }
+        .piece { font-size: 30px; }
+        button { padding: 15px 30px; font-size: 25px; background: lime; color: black; border: none; cursor: pointer; border-radius: 10px; margin-top: 20px; }
+        a { color: lime; font-size: 30px; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <h1>Satranç</h1>
+    <div id="board"></div>
+    <button onclick="resetGame()">Yeni Oyun</button>
+    <script>
+        const board = document.getElementById('board');
+
+        function createBoard() {
+            board.innerHTML = '';
+            for (let y = 0; y < 8; y++) {
+                for (let x = 0; x < 8; x++) {
+                    const cell = document.createElement('div');
+                    cell.classList.add('cell');
+                    cell.classList.add((x + y) % 2 === 0 ? 'white' : 'black');
+                    if (y === 0) cell.innerHTML = '<span class="piece">' + (x === 0 || x === 7 ? '♖' : x === 1 || x === 6 ? '♘' : x === 2 || x === 5 ? '♗' : x === 3 ? '♕' : '♔') + '</span>';
+                    if (y === 1) cell.innerHTML = '<span class="piece">♙</span>';
+                    if (y === 6) cell.innerHTML = '<span class="piece">♟</span>';
+                    if (y === 7) cell.innerHTML = '<span class="piece">' + (x === 0 || x === 7 ? '♜' : x === 1 || x === 6 ? '♞' : x === 2 || x === 5 ? '♝' : x === 3 ? '♛' : '♚') + '</span>';
+                    board.appendChild(cell);
+                }
+            }
+        }
+
+        function resetGame() {
+            createBoard();
+        }
+
+        createBoard();
+    </script>
+    <br><br><a href="index.html">Ana Sayfa</a>
+</body>
+</html>
