@@ -20,7 +20,7 @@
     <p>Ok tuşları veya WASD ile hareket et!</p>
     <canvas id="canvas" width="400" height="400"></canvas>
     <div id="score">Skor: 0</div>
-    <button onclick="resetGame()">Yeni Oyun</button>
+    <button onclick="startNewGame()">Yeni Oyun</button>
     <script>
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
@@ -28,11 +28,23 @@
         const tileCount = canvas.width / gridSize;
 
         let snake = [{x: 10, y: 10}];
-        let food = {x: 15, y: 15};
-        let dx = 0;
+        let food = {};
+        let dx = 1; // Başlangıçta sağa hareket etsin
         let dy = 0;
         let score = 0;
         let gameOver = false;
+        let gameInterval;
+
+        function randomFood() {
+            food = {
+                x: Math.floor(Math.random() * tileCount),
+                y: Math.floor(Math.random() * tileCount)
+            };
+            // Yemin yılanın üstünde çıkmaması
+            if (snake.some(part => part.x === food.x && part.y === food.y)) {
+                randomFood();
+            }
+        }
 
         function drawGame() {
             // Arka plan
@@ -50,7 +62,7 @@
             ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
 
             // Skor
-            document.getElementById('score').innerText = 'Skor: ' + score;
+            document.getElementById('score').innerText = gameOver ? 'Oyun Bitti! Skor: ' + score : 'Skor: ' + score;
         }
 
         function update() {
@@ -61,14 +73,16 @@
             // Duvar çarpışma
             if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) {
                 gameOver = true;
-                document.getElementById('score').innerText = 'Oyun Bitti! Skor: ' + score;
+                clearInterval(gameInterval);
+                drawGame();
                 return;
             }
 
             // Kendine çarpışma
             if (snake.some(part => part.x === head.x && part.y === head.y)) {
                 gameOver = true;
-                document.getElementById('score').innerText = 'Oyun Bitti! Skor: ' + score;
+                clearInterval(gameInterval);
+                drawGame();
                 return;
             }
 
@@ -77,10 +91,7 @@
             // Yem yeme
             if (head.x === food.x && head.y === food.y) {
                 score++;
-                food = {
-                    x: Math.floor(Math.random() * tileCount),
-                    y: Math.floor(Math.random() * tileCount)
-                };
+                randomFood();
             } else {
                 snake.pop();
             }
@@ -96,19 +107,22 @@
             if ((key === 40 || key === 83) && dy !== -1) { dx = 0; dy = 1; } // Aşağı / S
         }
 
-        function resetGame() {
+        function startNewGame() {
             snake = [{x: 10, y: 10}];
-            dx = 0;
+            dx = 1; // Sağdan başlasın
             dy = 0;
             score = 0;
             gameOver = false;
-            food = {x: 15, y: 15};
+            randomFood();
+            clearInterval(gameInterval);
+            gameInterval = setInterval(update, 150);
             drawGame();
         }
 
         document.addEventListener('keydown', changeDirection);
-        drawGame();
-        setInterval(update, 150);
+
+        // Sayfa açılınca otomatik başla
+        startNewGame();
     </script>
     <br><br><a href="index.html">Ana Sayfa</a>
 </body>
