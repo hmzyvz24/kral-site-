@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XOX</title>
+    <style>
+        body { font-family: 'Arial Black', Arial; text-align: center; background-image: url('https://i.pinimg.com/736x/68/fc/52/68fc522a8deaea59e9a1543df5380608.jpg'); background-size: cover; background-attachment: fixed; color: white; margin: 0; padding: 50px; }
+        h1 { font-style: italic; text-shadow: 2px 2px 8px black; font-size: 70px; animation: glow 2s infinite; }
+        @keyframes glow { 0% { text-shadow: 0 0 20px yellow; } 50% { text-shadow: 0 0 40px yellow; } 100% { text-shadow: 0 0 20px yellow; } }
+        #board { display: grid; grid-template-columns: repeat(3, 100px); gap: 10px; width: 330px; margin: 40px auto; }
+        .cell { width: 100px; height: 100px; background: rgba(0,0,0,0.7); font-size: 65px; color: lime; cursor: pointer; border: 4px solid lime; display: flex; align-items: center; justify-content: center; border-radius: 10px; }
+        .cell:hover { background: rgba(0,0,0,0.9); }
+        #message { font-size: 55px; margin: 40px; font-weight: bold; animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+        button { padding: 15px 30px; font-size: 25px; background: lime; color: black; border: none; cursor: pointer; border-radius: 10px; margin-top: 20px; }
+        a { color: lime; font-size: 30px; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <h1>XOX</h1>
+    <p style="font-size: 30px;">Sıra: <span id="turn">X</span></p>
+    <div id="board"></div>
+    <div id="message"></div>
+    <button onclick="resetGame()">Yeni Oyun</button>
+    <script>
+        const boardElement = document.getElementById('board');
+        let cells = [];
+        let currentPlayer = 'X';
+        let gameActive = true;
+        let gameState = ["", "", "", "", "", "", "", "", ""];
+
+        const winningConditions = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8],
+            [0, 3, 6], [1, 4, 7], [2, 5, 8],
+            [0, 4, 8], [2, 4, 6]
+        ];
+
+        function createBoard() {
+            boardElement.innerHTML = '';
+            cells = [];
+            for (let i = 0; i < 9; i++) {
+                const cell = document.createElement('div');
+                cell.classList.add('cell');
+                cell.addEventListener('click', () => handleCellClick(i));
+                boardElement.appendChild(cell);
+                cells.push(cell);
+            }
+        }
+
+        function handleCellClick(index) {
+            if (gameState[index] !== "" || !gameActive) return;
+            gameState[index] = currentPlayer;
+            cells[index].innerText = currentPlayer;
+
+            if (checkWinner()) {
+                document.getElementById('message').innerHTML = `<span style="color: ${currentPlayer === 'X' ? 'cyan' : 'magenta'};">${currentPlayer} KAZANDI! 👑</span>`;
+                gameActive = false;
+            } else if (gameState.every(cell => cell !== "")) {
+                document.getElementById('message').innerHTML = '<span style="color: yellow;">BERABERE!</span>';
+                gameActive = false;
+            } else {
+                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                document.getElementById('turn').innerText = currentPlayer;
+            }
+        }
+
+        function checkWinner() {
+            return winningConditions.some(condition => {
+                return condition.every(index => gameState[index] === currentPlayer);
+            });
+        }
+
+        function resetGame() {
+            gameState = ["", "", "", "", "", "", "", "", ""];
+            currentPlayer = 'X';
+            gameActive = true;
+            document.getElementById('turn').innerText = 'X';
+            document.getElementById('message').innerHTML = '';
+            createBoard();
+        }
+
+        createBoard();
+    </script>
+    <br><br><a href="index.html">Ana Sayfa</a>
+</body>
+</html>
