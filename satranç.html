@@ -72,14 +72,13 @@
             if (selected) {
                 const fromX = selected.x;
                 const fromY = selected.y;
-                if (getPossibleMoves(fromX, fromY).some(m => m[0] === x && m[1] === y)) {
-                    // Geçerli hamle – taşı hareket ettir
+                const moves = getPossibleMoves(fromX, fromY);
+                const isValid = moves.some(m => m[0] === x && m[1] === y);
+                if (isValid) {
                     gameBoard[y][x] = gameBoard[fromY][fromX];
                     gameBoard[fromY][fromX] = null;
-                    // Görsel güncelle
                     board.children[y * 8 + x].innerHTML = gameBoard[y][x] || '';
                     board.children[fromY * 8 + fromX].innerHTML = '';
-                    // Sıra değiştir
                     turn = turn === 'white' ? 'black' : 'white';
                     document.getElementById('turn').innerText = 'Sıra: ' + (turn === 'white' ? 'Beyaz' : 'Siyah');
                 }
@@ -100,12 +99,15 @@
 
         function getPossibleMoves(x, y) {
             const piece = gameBoard[y][x];
+            if (!piece) return [];
             const type = pieceType[piece];
             let moves = [];
 
+            const color = isWhite(piece) ? 'white' : 'black';
+
             if (type === 'pawn') {
-                const dir = isWhite(piece) ? -1 : 1;
-                const startRow = isWhite(piece) ? 6 : 1;
+                const dir = color === 'white' ? -1 : 1;
+                const startRow = color === 'white' ? 6 : 1;
                 if (y + dir >= 0 && y + dir < 8 && !gameBoard[y + dir][x]) {
                     moves.push([x, y + dir]);
                     if (y === startRow && !gameBoard[y + 2 * dir][x]) moves.push([x, y + 2 * dir]);
@@ -113,7 +115,7 @@
                 [-1, 1].forEach(dx => {
                     const nx = x + dx;
                     const ny = y + dir;
-                    if (nx >= 0 && nx < 8 && ny >= 0 && ny < 8 && gameBoard[ny][nx] && isBlack(gameBoard[ny][nx]) !== isWhite(piece)) {
+                    if (nx >= 0 && nx < 8 && ny >= 0 && ny < 8 && gameBoard[ny][nx] && isWhite(gameBoard[ny][nx]) !== isWhite(piece)) {
                         moves.push([nx, ny]);
                     }
                 });
@@ -124,7 +126,7 @@
                         const ny = y + i * dy;
                         if (nx < 0 || nx >= 8 || ny < 0 || ny >= 8) break;
                         if (gameBoard[ny][nx]) {
-                            if (isBlack(gameBoard[ny][nx]) !== isWhite(piece)) moves.push([nx, ny]);
+                            if (isWhite(gameBoard[ny][nx]) !== isWhite(piece)) moves.push([nx, ny]);
                             break;
                         }
                         moves.push([nx, ny]);
@@ -134,7 +136,7 @@
                 [[1,2],[1,-2],[-1,2],[-1,-2],[2,1],[2,-1],[-2,1],[-2,-1]].forEach(([dx, dy]) => {
                     const nx = x + dx;
                     const ny = y + dy;
-                    if (nx >= 0 && nx < 8 && ny >= 0 && ny < 8 && (!gameBoard[ny][nx] || isBlack(gameBoard[ny][nx]) !== isWhite(piece))) {
+                    if (nx >= 0 && nx < 8 && ny >= 0 && ny < 8 && (!gameBoard[ny][nx] || isWhite(gameBoard[ny][nx]) !== isWhite(piece))) {
                         moves.push([nx, ny]);
                     }
                 });
@@ -145,7 +147,7 @@
                         const ny = y + i * dy;
                         if (nx < 0 || nx >= 8 || ny < 0 || ny >= 8) break;
                         if (gameBoard[ny][nx]) {
-                            if (isBlack(gameBoard[ny][nx]) !== isWhite(piece)) moves.push([nx, ny]);
+                            if (isWhite(gameBoard[ny][nx]) !== isWhite(piece)) moves.push([nx, ny]);
                             break;
                         }
                         moves.push([nx, ny]);
@@ -158,7 +160,7 @@
                         const ny = y + i * dy;
                         if (nx < 0 || nx >= 8 || ny < 0 || ny >= 8) break;
                         if (gameBoard[ny][nx]) {
-                            if (isBlack(gameBoard[ny][nx]) !== isWhite(piece)) moves.push([nx, ny]);
+                            if (isWhite(gameBoard[ny][nx]) !== isWhite(piece)) moves.push([nx, ny]);
                             break;
                         }
                         moves.push([nx, ny]);
@@ -168,7 +170,7 @@
                 [[0,1],[0,-1],[1,0],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]].forEach(([dx, dy]) => {
                     const nx = x + dx;
                     const ny = y + dy;
-                    if (nx >= 0 && nx < 8 && ny >= 0 && ny < 8 && (!gameBoard[ny][nx] || isBlack(gameBoard[ny][nx]) !== isWhite(piece))) {
+                    if (nx >= 0 && nx < 8 && ny >= 0 && ny < 8 && (!gameBoard[ny][nx] || isWhite(gameBoard[ny][nx]) !== isWhite(piece))) {
                         moves.push([nx, ny]);
                     }
                 });
