@@ -72,12 +72,12 @@
             if (selected) {
                 const fromX = selected.x;
                 const fromY = selected.y;
-                if (isValidMove(fromX, fromY, x, y)) {
-                    // Taşı hareket ettir ve board'u güncelle
+                if (getPossibleMoves(fromX, fromY).some(m => m[0] === x && m[1] === y)) {
+                    // Geçerli hamle – taşı hareket ettir
                     gameBoard[y][x] = gameBoard[fromY][fromX];
                     gameBoard[fromY][fromX] = null;
                     // Görsel güncelle
-                    board.children[y * 8 + x].innerHTML = gameBoard[y][x];
+                    board.children[y * 8 + x].innerHTML = gameBoard[y][x] || '';
                     board.children[fromY * 8 + fromX].innerHTML = '';
                     // Sıra değiştir
                     turn = turn === 'white' ? 'black' : 'white';
@@ -98,7 +98,8 @@
             });
         }
 
-        function highlightMoves(x, y, piece) {
+        function getPossibleMoves(x, y) {
+            const piece = gameBoard[y][x];
             const type = pieceType[piece];
             let moves = [];
 
@@ -173,6 +174,11 @@
                 });
             }
 
+            return moves;
+        }
+
+        function highlightMoves(x, y, piece) {
+            const moves = getPossibleMoves(x, y);
             moves.forEach(([mx, my]) => {
                 const sq = board.children[my * 8 + mx];
                 if (gameBoard[my][mx]) {
@@ -181,11 +187,6 @@
                     sq.classList.add('possible');
                 }
             });
-        }
-
-        function isValidMove(fromX, fromY, toX, toY) {
-            // Basit validation - highlightMoves zaten geçerli olanları gösteriyor
-            return true; // highlightMoves ile filtrelendiği için
         }
 
         function newGame() {
